@@ -1,11 +1,25 @@
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const cadastroSchema = z.object({
+  nome: z.string().min(3, { message: "O nome precisa ter no mínimo 3 caracteres." }),
+  nomeUsuario: z.string().min(5, { message: "O nome de usuário precisa ter no mínimo 5 caracteres." }),
+  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
+});
+
+type CadastroInput = z.infer<typeof cadastroSchema>;
 
 export default function Cadastro() {
-  const { register, handleSubmit } = useForm();
 
+  const { register, handleSubmit, formState: { errors } } = useForm<CadastroInput>({
+    resolver: zodResolver(cadastroSchema),
+  });
+  
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
   });
+
   return (
     <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
@@ -22,6 +36,7 @@ export default function Cadastro() {
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             {...register("nome")}
           />
+            {errors.nome && <p className="text-red-500 text-sm">{errors.nome.message}</p>}
         </div>
         <div>
           <label htmlFor="nomeUsuario" className="block text-sm font-medium text-gray-700">
@@ -33,6 +48,7 @@ export default function Cadastro() {
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           {...register("nomeUsuario")}
           />
+            {errors.nomeUsuario && <p className="text-red-500 text-sm">{errors.nomeUsuario.message}</p>}
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -44,6 +60,7 @@ export default function Cadastro() {
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           {...register("email")}
           />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
         </div>
         <div>
           <button
