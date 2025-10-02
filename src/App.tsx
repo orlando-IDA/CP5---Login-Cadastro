@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h1>Access Control CP</h1>
+      <h1 className="text-3xl font-bold">Access Control CP</h1>
     </>
   )
 }
