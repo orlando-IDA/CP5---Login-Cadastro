@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
-    <main className="bg-black text-white min-h-screen flex flex-col justify-center items-center">
+    <main className="bg-gray-100 text-white min-h-screen flex flex-col justify-center items-center">
       <Outlet />
     </main>
   )
