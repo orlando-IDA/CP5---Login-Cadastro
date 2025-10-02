@@ -1,9 +1,11 @@
+import { Outlet } from 'react-router-dom';
+
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold">Access Control CP</h1>
-    </>
+    <main className="bg-black text-white min-h-screen flex flex-col justify-center items-center">
+      <Outlet />
+    </main>
   )
 }
 
-export default App
+export default App;
