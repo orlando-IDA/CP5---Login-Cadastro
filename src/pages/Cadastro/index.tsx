@@ -38,6 +38,17 @@ export default function Cadastro() {
         return;
       }
 
+      await fetch(${API_URL}/usuarios, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      alert("Cadastro realizado com sucesso!");
+      navigate("/");
+
     } catch (error) {
       console.error("Erro ao verificar duplicidade:", error);
       alert("Ocorreu um erro ao tentar cadastrar. Tente novamente.");
