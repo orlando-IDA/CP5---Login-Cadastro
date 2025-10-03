@@ -30,6 +30,14 @@ export default function Cadastro() {
         return;
       }
 
+      const responseEmail = await fetch(${API_URL}/usuarios?email=${data.email});
+      const emailData = await responseEmail.json();
+
+      if (emailData.length > 0) {
+        alert("E-mail já cadastrado. Por favor, utilize outro.");
+        return;
+      }
+
     } catch (error) {
       console.error("Erro ao verificar duplicidade:", error);
       alert("Ocorreu um erro ao tentar cadastrar. Tente novamente.");
