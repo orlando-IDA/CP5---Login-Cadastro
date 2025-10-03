@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function LoginPage() {
   return (
     <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
@@ -25,9 +27,21 @@ export default function LoginPage() {
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        <button type="submit">
-          Entrar
-        </button>
+        <div>
+          <button
+            type="submit"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Entrar
+          </button>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Não tem uma conta?{' '}
+            <Link to="/cadastro" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Cadastre-se
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );
