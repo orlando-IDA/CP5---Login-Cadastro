@@ -1,4 +1,12 @@
 import { Link } from "react-router-dom";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  nomeUsuario: z.string().min(5, { message: "O nome de usuário é obrigatório." }),
+  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
+});
+
+type LoginInput = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   return (
