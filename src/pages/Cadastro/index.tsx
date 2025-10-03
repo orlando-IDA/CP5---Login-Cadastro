@@ -21,7 +21,19 @@ export default function Cadastro() {
   });
   
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    try {
+      const responseUsername = await fetch(${API_URL}/usuarios?nomeUsuario=${data.nomeUsuario});
+      const usernameData = await responseUsername.json();
+
+      if (usernameData.length > 0) {
+        alert("Nome de usuário já existe. Por favor, escolha outro.");
+        return;
+      }
+
+    } catch (error) {
+      console.error("Erro ao verificar duplicidade:", error);
+      alert("Ocorreu um erro ao tentar cadastrar. Tente novamente.");
+    }
   });
 
   return (
