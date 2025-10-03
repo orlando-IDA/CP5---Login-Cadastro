@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const loginSchema = z.object({
   nomeUsuario: z.string().min(5, { message: "O nome de usuário é obrigatório." }),
@@ -9,12 +11,21 @@ const loginSchema = z.object({
 type LoginInput = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
+  });
+
   return (
     <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Entrar
       </h2>
-      <form className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-6">
         <div>
           <label htmlFor="nomeUsuario" className="block text-sm font-medium text-gray-700">
             Nome de Usuário
@@ -23,7 +34,9 @@ export default function LoginPage() {
             id="nomeUsuario"
             type="text"
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            {...register("nomeUsuario")}
           />
+          {errors.nomeUsuario && <p className="text-red-500 text-sm">{errors.nomeUsuario.message}</p>}
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -33,7 +46,9 @@ export default function LoginPage() {
             id="email"
             type="email"
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            {...register("email")}
           />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
         </div>
         <div>
           <button
