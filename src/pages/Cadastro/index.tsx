@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 const cadastroSchema = z.object({
   nome: z.string().min(3, { message: "O nome precisa ter no mínimo 3 caracteres." }),
@@ -10,7 +11,10 @@ const cadastroSchema = z.object({
 
 type CadastroInput = z.infer<typeof cadastroSchema>;
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Cadastro() {
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm<CadastroInput>({
     resolver: zodResolver(cadastroSchema),
@@ -70,6 +74,6 @@ export default function Cadastro() {
           </button>
         </div>
       </form>
-    </div>
-  );
+    </div>
+  );
 }
