@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 const cadastroSchema = z.object({
   nome: z.string().min(3, { message: "O nome precisa ter no mínimo 3 caracteres." }),
@@ -10,14 +11,48 @@ const cadastroSchema = z.object({
 
 type CadastroInput = z.infer<typeof cadastroSchema>;
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Cadastro() {
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm<CadastroInput>({
     resolver: zodResolver(cadastroSchema),
   });
   
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    try {
+      const responseUsername = await fetch(${API_URL}/usuarios?nomeUsuario=${data.nomeUsuario});
+      const usernameData = await responseUsername.json();
+
+      if (usernameData.length > 0) {
+        alert("Nome de usuário já existe. Por favor, escolha outro.");
+        return;
+      }
+
+      const responseEmail = await fetch(${API_URL}/usuarios?email=${data.email});
+      const emailData = await responseEmail.json();
+
+      if (emailData.length > 0) {
+        alert("E-mail já cadastrado. Por favor, utilize outro.");
+        return;
+      }
+
+      await fetch(${API_URL}/usuarios, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      alert("Cadastro realizado com sucesso!");
+      navigate("/");
+
+    } catch (error) {
+      console.error("Erro ao verificar duplicidade:", error);
+      alert("Ocorreu um erro ao tentar cadastrar. Tente novamente.");
+    }
   });
 
   return (
@@ -70,6 +105,6 @@ export default function Cadastro() {
           </button>
         </div>
       </form>
-    </div>
-  );
+    </div>
+  );
 }
