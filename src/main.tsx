@@ -1,23 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
-
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LoginPage from './pages/Login/index.tsx';
-import CadastroPage from './pages/Cadastro/index.tsx';
+import { AuthProvider } from './context/Authcontext';
+import AppLayout from './components/AppLayout';
+import Login from './pages/Login';
+import Cadastro from './pages/Cadastro';
 
 const router = createBrowserRouter([
   {
-    path: "/", element: <App />, children: [
-      {path: "/", element: <LoginPage />,},
-      {path: "/cadastro", element: <CadastroPage />,},
+    element: <AppLayout />, 
+    children: [
+      { path: '/', element: <Login /> },      
+      { path: '/login', element: <Login /> },
+      { path: '/cadastro', element: <Cadastro /> },
     ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
-)
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </React.StrictMode>
+);
