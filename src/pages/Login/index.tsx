@@ -1,71 +1,79 @@
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { getUsuarioByCreds } from '../../services/api';
+import { useAuth } from '../../context/Authcontext';
+import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
 
-const loginSchema = z.object({
-  nomeUsuario: z.string().min(5, { message: "O nome de usuário é obrigatório." }),
-  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
-});
+type FormLogin = { nomeUsuario: string; email: string; lembrar?: boolean };
 
-type LoginInput = z.infer<typeof loginSchema>;
+export default function Login() {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormLogin>();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [erroLogin, setErroLogin] = useState<string | null>(null);
 
-export default function LoginPage() {
-
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-  });
+  const onSubmit = async (data: FormLogin) => {
+    setErroLogin(null);
+    try {
+      const encontrados = await getUsuarioByCreds(data.nomeUsuario.trim(), data.email.trim());
+      if (encontrados.length === 1) {
+        login(encontrados[0], !!data.lembrar); 
+        navigate('/'); 
+        return;
+      }
+      setErroLogin('Usuário ou e-mail não conferem.');
+    } catch (e) {
+      setErroLogin('Erro ao autenticar. Tente novamente.');
+    }
+  };
 
   return (
-    <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Entrar
-      </h2>
-      <form onSubmit={onSubmit} className="space-y-6">
+    <div className="mx-auto max-w-md">
+      <h1 className="text-2xl font-bold mb-4">Login</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="nomeUsuario" className="block text-sm font-medium text-gray-700">
-            Nome de Usuário
-          </label>
+          <label className="block text-sm mb-1">Nome de usuário</label>
           <input
-            id="nomeUsuario"
-            type="text"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            {...register("nomeUsuario")}
+            className="w-full rounded-md border px-3 py-2"
+            {...register('nomeUsuario', { required: 'Informe o nome de usuário' })}
+            placeholder="seuusuario"
           />
-          {errors.nomeUsuario && <p className="text-red-500 text-sm">{errors.nomeUsuario.message}</p>}
+          {errors.nomeUsuario && <p className="text-red-600 text-xs mt-1">{errors.nomeUsuario.message}</p>}
         </div>
+
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            E-mail
-          </label>
+          <label className="block text-sm mb-1">E-mail</label>
           <input
-            id="email"
             type="email"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            {...register("email")}
+            className="w-full rounded-md border px-3 py-2"
+            {...register('email', {
+              required: 'Informe o e-mail',
+              pattern: { value: /\S+@\S+\.\S+/, message: 'E-mail inválido' }
+            })}
+            placeholder="voce@exemplo.com"
           />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>}
         </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Entrar
-          </button>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Não tem uma conta?{' '}
-            <Link to="/cadastro" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Cadastre-se
-            </Link>
-          </p>
-        </div>
+
+        <label className="inline-flex items-center gap-2 text-sm">
+          <input type="checkbox" {...register('lembrar')} />
+          Manter-me conectado (salvar no navegador)
+        </label>
+
+        {erroLogin && <p className="text-red-700 text-sm">{erroLogin}</p>}
+
+        <button
+          disabled={isSubmitting}
+          className="w-full rounded-md bg-slate-900 text-white py-2 hover:opacity-90 disabled:opacity-60"
+        >
+          {isSubmitting ? 'Entrando...' : 'Entrar'}
+        </button>
       </form>
-    </div>
-  );
+
+      <p className="text-sm mt-4">
+        Não tem conta? <Link to="/cadastro" className="underline">Cadastre-se</Link>
+      </p>
+    </div>
+  );
 }
